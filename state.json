@@ -62,7 +62,7 @@
       "wave": 5,
       "status": "implemented",
       "branch": "feat/F06-cancelamento",
-      "pr": null,
+      "pr": "https://github.com/PierryMedeiros/catraca/pull/6",
       "latestReport": null
     }
   ]
