@@ -7,6 +7,7 @@ const { describe, test, before, after } = require('node:test');
 const assert = require('node:assert/strict');
 const { startApp, createClient, loginAs, SEED, query, endPool } = require('./helpers');
 const { EVENT_TEXTS } = require('../src/features/events/texts');
+const { CANCEL_TEXTS } = require('../src/features/cancellation/texts');
 const messages = require('../src/messages');
 const { formatDateTime } = require('../src/format');
 const views = require('../src/features/events/views');
@@ -408,10 +409,11 @@ describe('events-http.test.js — F02 rotas', () => {
 
     const ed = await A.post(`/org/events/${id}/edit`, eventFields({ name: 'Volta' }));
     assert.equal(ed.status, 409);
-    assert.ok((await ed.text()).includes(EVENT_TEXTS.CANCELLED_LOCKED));
+    // F06 (spec §3.2): o 409 de evento cancelado usa renderCancelError.
+    assert.ok((await ed.text()).includes(CANCEL_TEXTS.cancelledReadOnly));
     const pb = await publishEventHttp(A, id);
     assert.equal(pb.status, 409);
-    assert.ok((await pb.text()).includes(EVENT_TEXTS.CANCELLED_LOCKED));
+    assert.ok((await pb.text()).includes(CANCEL_TEXTS.cancelledReadOnly));
     assert.equal(await eventFingerprint(id), fp);
     assert.ok((await (await A.get('/org/events')).text()).includes('cancelado'));
   });
