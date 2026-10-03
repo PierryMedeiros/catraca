@@ -36,7 +36,7 @@ A Catraca vende ingressos para eventos pequenos. O organizador cria e publica ev
 
 ## 4. Features
 
-Pastas: `docs/features/F01-fundacao-contas`, `F02-gestao-eventos`, `F03-vitrine-compra-gateway`, `F04-api-parceiros`, `F05-checkin-painel`, `F06-cancelamento-evento`.
+Pastas: `docs/features/F01-fundacao`, `F02-eventos`, `F03-compra`, `F04-api-parceiros`, `F05-checkin-painel`, `F06-cancelamento`.
 
 | ID | Nome | Descrição | Provides (interfaces concretas) | Consumes |
 |---|---|---|---|---|
@@ -276,8 +276,8 @@ Cada aresta do grafo tem pelo menos um critério X, que entra no `contract.md` d
 | 6 | compra API `0004` → 202 pending, `availableSeats` 0 | F04-AC03, F04-AC02, X-08 |
 | 7 | `sold_out` na API e `Ingressos esgotados` na vitrine | F04-AC06, F03-AC05, X-08 |
 | 8 | T2 `declined`, vaga volta; T3 `confirmed` | F03-AC06, F04-AC08, F04-AC09, X-08 |
-| 9 | lotação 1 rejeitada; preço 150 + lotação 3; painel 3/0/0/0/R$ 350,00/0 | F02-AC07, F02-AC08, X-05, X-04, F05-AC07, F05-AC08, X-11, X-17 |
-| 10 | check-in C1, C1, C2, `ZZZZZZZZ`; Check-ins 1 | F05-AC01, F05-AC02, F05-AC04, F05-AC05, F05-AC06, X-11, X-17 |
+| 9 | lotação 1 rejeitada; preço 150 + lotação 3; painel 3/0/0/0/R$ 350,00/0 | F02-AC07, F02-AC08, X-05, X-04, F05-AC07, F05-AC08, X-11 |
+| 10 | check-in C1, C1, C2, `ZZZZZZZZ`; Check-ins 1 | F05-AC01, F05-AC02, F05-AC04, F05-AC05, F05-AC06, X-11 |
 | 11 | B não vê E1 (lista e URL); E2 de B; participante/visitante sem dados; C3 inválido em E1 | F02-AC04, F02-AC09, F01-AC09, X-01, X-10, X-07, X-08, F05-AC02 |
 | 12 | E3, T5 (`0003`), T6 (`0001`), cancelamento | F06-AC01, F06-AC02, X-14 |
 | 13 | E3 fora da vitrine/API, 404 na compra; T6 `refunded`, T5 `cancelled`; sem edição | F06-AC02, F06-AC03, F06-AC04, X-13, X-15 |
@@ -303,6 +303,22 @@ Cada aresta do grafo tem pelo menos um critério X, que entra no `contract.md` d
 | Fuso | `up.sh` detecta o fuso do host e o passa como `TZ` ao container (fallback `America/Sao_Paulo`); `starts_at` é `timestamptz`; a API usa `toIsoWithOffset`. |
 | Contas da seed | Organizador A `org.a@catraca.local`, organizador B `org.b@catraca.local`, participante `participante@catraca.local`, todos com senha `catraca123` (documentados no README). |
 | Chave de parceiro | `PARTNER_API_KEY`, padrão `catraca-parceiro-2026` no Compose, documentada no README. |
+
+## 10.1 Convenções compartilhadas (fixadas após a escrita das specs)
+
+As specs foram escritas em paralelo; estes nomes valem para todas as features:
+
+| Tema | Convenção |
+|---|---|
+| Módulos | CommonJS (`require`) |
+| `users.id` | `text`, `usr_` + 10 `[a-z0-9]` |
+| Login `POST /login` | campos `email`, `password`, `next` |
+| Cadastro `POST /signup` | campos `name`, `email`, `password` |
+| Evento `POST /org/events` e edição | campos `name`, `startsAt` (`datetime-local`), `venue`, `capacity`, `price` |
+| Compra na vitrine | campo `cardNumber` |
+| Check-in | campo `code` |
+| Dinheiro | `formatBRL` usa espaço ASCII (U+0020): `R$ 350,00` |
+| Serviço Postgres no Compose | `db` (usuário/banco `catraca`); serviço do app: `app` |
 
 ## 11. Decisões para pontos vagos do brief
 
