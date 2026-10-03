@@ -34,11 +34,11 @@ async function loadUser(req, res, next) {
   next();
 }
 
+// Visitante vai ao login com next = caminho pedido, em qualquer método
+// (PRD F01-AC09). Para POST de ação, a feature dona da rota oferece o GET
+// correspondente (ex.: F02 redireciona GET /org/events/:id/edit à gestão).
 function redirectToLogin(req, res) {
-  if (req.method === 'GET' || req.method === 'HEAD') {
-    return res.redirect(302, `/login?next=${encodeURIComponent(req.originalUrl)}`);
-  }
-  return res.redirect(302, '/login');
+  return res.redirect(302, `/login?next=${encodeURIComponent(req.originalUrl)}`);
 }
 
 function requireRole(role, deniedMessage) {

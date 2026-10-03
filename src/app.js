@@ -41,6 +41,7 @@ function createApp() {
 
   // --- features: uma linha por feature, nesta ordem ---
   app.use(require('./features/accounts/routes')); // F01
+  app.use(require('./features/events/routes')); // F02
   // F02, F03, F04, F05, F06 acrescentam a sua linha aqui
   // --- fim das features ---
 
