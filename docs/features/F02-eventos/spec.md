@@ -286,3 +286,14 @@ O módulo de rotas segue o sistema de módulos escolhido por F01 (ESM ou CommonJ
 | Publish trava o evento | sim, para serializar com o cancelamento de F06 |
 | Textos próprios | `src/features/events/texts.js`, não `src/messages.js` (que é de F01 e só tem textos do brief) |
 | Ordenação | "Meus eventos" e `listOnSaleEvents` por `starts_at` ascendente |
+
+## 13. Desvios registrados na implementação
+
+| Ponto | Spec/F01 | Implementado | Motivo |
+|---|---|---|---|
+| Visitante em `POST /org/*` | F01 redirecionava POST para `/login` sem `next` (testes `f01-guards`/`f01-signup` e item do contrato de F01 esperavam isso) | `redirectToLogin` (`src/auth.js`) usa `/login?next=<caminho pedido>` em qualquer método | PRD F01-AC09 ("visitante recebe 302 para `/login?next=…`") e contrato F02-C02, que exige `next` também nos POSTs de visitante. Os dois testes de F01 foram ajustados para o comportamento do PRD. |
+| Volta do login após POST de ação | — | `GET /org/events/:id/edit` e `GET /org/events/:id/publish` redirecionam (302) para `/org/events/:id` | Com `next` no POST, o login devolve o organizador a um GET desses caminhos; sem a rota ele cairia em "Página não encontrada". A gestão aplica o ownership normalmente (404 para outro organizador). |
+| Textos | `src/features/events/texts.js` com todos os textos | `NOT_FOUND`, `EVENT_STATUS_LABELS` e `capacityBelowOccupied` vêm de `src/messages.js` (F01 já os fixou); os demais ficam em `texts.js` | AGENTS.md, regra 8: textos já fixados não são reescritos. |
+| `validateEventInput` | `values` só no erro | `values` também no sucesso | Usado para reexibir o formulário quando a lotação fica abaixo das vagas ocupadas. |
+
+Escopo do diff (contrato F02-C21): além dos arquivos previstos, mudam `src/auth.js`, `test/f01-guards.test.js` e `test/f01-signup.test.js`, pelo primeiro desvio acima.
