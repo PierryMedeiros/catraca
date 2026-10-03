@@ -45,7 +45,9 @@ Nenhum comando exige `npm install` no host: tudo roda em containers. O host só 
 | PRD | `docs/prd.md` |
 | Features (spec, plano, contrato, relatórios) | `docs/features/<ID>-<slug>/` |
 | Estado do projeto | `state.json` |
-| Scripts do harness | `scripts/` |
+| Scripts do harness | `scripts/` (`up.sh`, `down.sh`, `gates.sh`; `fluxo-avaliador.sh` roda os passos 2–16 do fluxo do avaliador contra o app no ar) |
+| Instruções do avaliador | `docs/avaliador.md` |
+| README (como rodar, credenciais, PRs, decisões) | `README.md` |
 | Seed | `src/seed.js` (roda automaticamente na subida) |
 | Código | `src/` |
 | Testes | `test/` |
