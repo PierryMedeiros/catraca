@@ -45,7 +45,7 @@ Defina as variáveis só se os nomes reais diferirem dos padrões entre parênte
 curl -s -b "$W/jarA" "$WEB/org/events/new" | grep -oE 'name="[^"]+"' | sort -u
 ```
 
-`F_NAME` (`name`), `F_START` (`starts_at`), `F_VENUE` (`venue`), `F_CAP` (`capacity`), `F_PRICE` (`price`). O campo de cartão da vitrine (`F_CARD`, padrão `cardNumber`) é descoberto no item F04-C13. Se algum formulário tiver campo oculto obrigatório (ex.: token), acrescente-o às funções abaixo e registre no relatório.
+`F_NAME` (`name`), `F_START` (`startsAt`, PRD seção 10.1), `F_VENUE` (`venue`), `F_CAP` (`capacity`), `F_PRICE` (`price`). O campo de cartão da vitrine (`F_CARD`, padrão `cardNumber`) é descoberto no item F04-C13. Se algum formulário tiver campo oculto obrigatório (ex.: token), acrescente-o às funções abaixo e registre no relatório.
 
 ### 0.4 Sessões e funções auxiliares
 
@@ -58,13 +58,13 @@ login jarP participante@catraca.local     # esperado: 302 ...
 START=$(date -d '+30 days' +%Y-%m-%d)T21:00
 # cria rascunho como organizador A; $1 lotação, $2 preço (ex. 100,00); imprime o id
 evento() { curl -s -b "$W/jarA" -c "$W/jarA" -o /dev/null -w '%{redirect_url}' -X POST "$WEB/org/events" \
-  --data-urlencode "${F_NAME:-name}=F04 $(date +%s%N)" --data-urlencode "${F_START:-starts_at}=$START" \
+  --data-urlencode "${F_NAME:-name}=F04 $(date +%s%N)" --data-urlencode "${F_START:-startsAt}=$START" \
   --data-urlencode "${F_VENUE:-venue}=Porão" --data-urlencode "${F_CAP:-capacity}=$1" \
   --data-urlencode "${F_PRICE:-price}=$2" | grep -oE 'evt_[a-z0-9]{10}'; }
 publicar() { curl -s -b "$W/jarA" -o /dev/null -w '%{http_code}\n' -X POST "$WEB/org/events/$1/publish"; }
 # edita como A; $1 id, $2 lotação, $3 preço
 editar() { curl -s -b "$W/jarA" -o /dev/null -w '%{http_code}\n' -X POST "$WEB/org/events/$1/edit" \
-  --data-urlencode "${F_NAME:-name}=F04 editado" --data-urlencode "${F_START:-starts_at}=$START" \
+  --data-urlencode "${F_NAME:-name}=F04 editado" --data-urlencode "${F_START:-startsAt}=$START" \
   --data-urlencode "${F_VENUE:-venue}=Porão" --data-urlencode "${F_CAP:-capacity}=$2" \
   --data-urlencode "${F_PRICE:-price}=$3"; }
 evento_pub() { local id; id=$(evento "$1" "$2"); publicar "$id" >/dev/null; echo "$id"; }
@@ -351,7 +351,7 @@ comprar "$E1" t3@example.com 4000000000000001; T3=$(jq -r .ticketId <<<"$BODY")
 for i in 1 2 3 4 5; do sleep 1; S3=$(ingresso "$T3" | jq -r .status); [ "$S3" = confirmed ] && break; done; echo "T3=$S3 em ${i}s"
 ```
 
-Esperado: `0`; item com `"availableSeats":2,"priceCents":10000`; compra na vitrine `302 …/me/tickets`; `202 …pending…` (T2) e `202 …` (T3S); item com `"availableSeats":0`; `409 {"error":"sold_out"}`; contagem ≥ 1; `T2=declined apos ~N s` com 59 ≤ N ≤ 76 (tolerância de arredondamento de `date +%s`; a medida precisa é a do banco); SQL `0003|confirmed|x` e `0004|declined|y` com 60 ≤ x ≤ 75 e 60 ≤ y ≤ 75; item com `"availableSeats":1`; `T3=confirmed em ≤5s`.
+Esperado: `0`; item com `"availableSeats":2,"priceCents":10000`; compra na vitrine `303 …/me/tickets` (redirect da vitrine fixado pela spec de F03; `302` também é aceito); `202 …pending…` (T2) e `202 …` (T3S); item com `"availableSeats":0`; `409 {"error":"sold_out"}`; contagem ≥ 1; `T2=declined apos ~N s` com 59 ≤ N ≤ 76 (tolerância de arredondamento de `date +%s`; a medida precisa é a do banco); SQL `0003|confirmed|x` e `0004|declined|y` com 60 ≤ x ≤ 75 e 60 ≤ y ≤ 75; item com `"availableSeats":1`; `T3=confirmed em ≤5s`.
 Aprovação: todas as saídas como esperado; os tempos medidos no banco (`updated_at − created_at`) de `0003` e `0004` ficam em [60, 75] s, e `T2` foi lido como `pending` em todas as leituras antes de 60 s.
 
 ### F04-C14 — Integração vitrine ↔ API: mesma lotação e consulta de ingresso da vitrine (X-08, F04-AC08)
@@ -371,7 +371,7 @@ sleep 5
 [ "$(ingresso "$TW")" = "{\"ticketId\":\"$TW\",\"code\":\"$CW\",\"eventId\":\"$E\",\"status\":\"confirmed\",\"checkedIn\":false}" ] && echo web-ok
 ```
 
-Esperado: `≥1`; `≥1`; `1`; `302`; item com `"availableSeats":2`; `web-ok`.
+Esperado: `≥1`; `≥1`; `1`; `303` (ou `302`); item com `"availableSeats":2`; `web-ok`.
 Aprovação: todas as saídas como esperado.
 
 ### F04-C15 — Toda resposta é JSON; compra da API não vincula a participante (F04-AC10)
