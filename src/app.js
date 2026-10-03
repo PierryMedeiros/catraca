@@ -45,7 +45,7 @@ function createApp() {
   app.use(require('./features/events/routes')); // F02
   require('./features/purchases').registerPurchases(app); // F03
   require('./features/checkin').registerCheckinFeature(app); // F05
-  // F02, F03, F04, F05, F06 acrescentam a sua linha aqui
+  require('./features/cancellation').registerCancellationFeature(app); // F06
   // --- fim das features ---
 
   app.use(require('./features/accounts/placeholders')); // F01: provisórias, sempre por último
