@@ -1,13 +1,69 @@
 {
   "project": "catraca",
-  "updatedAt": "2026-10-03T16:00:00-03:00",
-  "statusLegend": ["planned", "specified", "in_progress", "implemented", "evaluating", "needs_fix", "done"],
+  "updatedAt": "2026-10-03T16:23:47-03:00",
+  "statusLegend": [
+    "planned",
+    "specified",
+    "in_progress",
+    "implemented",
+    "evaluating",
+    "needs_fix",
+    "done"
+  ],
   "features": [
-    { "id": "F01", "name": "Fundação e contas", "wave": 1, "status": "planned", "branch": null, "pr": null, "latestReport": null },
-    { "id": "F02", "name": "Gestão de eventos", "wave": 2, "status": "planned", "branch": null, "pr": null, "latestReport": null },
-    { "id": "F03", "name": "Vitrine, compra e gateway", "wave": 3, "status": "planned", "branch": null, "pr": null, "latestReport": null },
-    { "id": "F04", "name": "API de parceiros", "wave": 4, "status": "planned", "branch": null, "pr": null, "latestReport": null },
-    { "id": "F05", "name": "Check-in e painel", "wave": 4, "status": "planned", "branch": null, "pr": null, "latestReport": null },
-    { "id": "F06", "name": "Cancelamento de evento", "wave": 5, "status": "planned", "branch": null, "pr": null, "latestReport": null }
+    {
+      "id": "F01",
+      "name": "Fundação e contas",
+      "wave": 1,
+      "status": "done",
+      "branch": "feat/F01-fundacao",
+      "pr": "https://github.com/PierryMedeiros/catraca/pull/1",
+      "latestReport": "docs/features/F01-fundacao/reports/2026-10-03-1620-avaliacao.md"
+    },
+    {
+      "id": "F02",
+      "name": "Gestão de eventos",
+      "wave": 2,
+      "status": "planned",
+      "branch": null,
+      "pr": null,
+      "latestReport": null
+    },
+    {
+      "id": "F03",
+      "name": "Vitrine, compra e gateway",
+      "wave": 3,
+      "status": "planned",
+      "branch": null,
+      "pr": null,
+      "latestReport": null
+    },
+    {
+      "id": "F04",
+      "name": "API de parceiros",
+      "wave": 4,
+      "status": "planned",
+      "branch": null,
+      "pr": null,
+      "latestReport": null
+    },
+    {
+      "id": "F05",
+      "name": "Check-in e painel",
+      "wave": 4,
+      "status": "planned",
+      "branch": null,
+      "pr": null,
+      "latestReport": null
+    },
+    {
+      "id": "F06",
+      "name": "Cancelamento de evento",
+      "wave": 5,
+      "status": "planned",
+      "branch": null,
+      "pr": null,
+      "latestReport": null
+    }
   ]
 }

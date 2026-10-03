@@ -1,0 +1,33 @@
+# Projeto separado dos gates (nome passado com -p por scripts/gates.sh).
+# Banco de teste em tmpfs: nenhum volume sobra depois do "down -v".
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: catraca
+      POSTGRES_PASSWORD: catraca
+      POSTGRES_DB: catraca_test
+      TZ: America/Sao_Paulo
+      PGTZ: America/Sao_Paulo
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U catraca -d catraca_test"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  tests:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["sh", "scripts/gates-inner.sh"]
+    environment:
+      DATABASE_URL: postgres://catraca:catraca@db:5432/catraca_test
+      TZ: America/Sao_Paulo
+      SESSION_SECRET: gates
+      PARTNER_API_KEY: catraca-parceiro-2026
+      GATEWAY_FAST_DELAY_MS: "200"
+      GATEWAY_SLOW_DELAY_MS: "1500"
+      GATEWAY_POLL_MS: "50"

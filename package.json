@@ -1,0 +1,23 @@
+{
+  "name": "catraca",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Venda de ingressos para eventos pequenos",
+  "type": "commonjs",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "up": "./scripts/up.sh",
+    "down": "./scripts/down.sh",
+    "gates": "./scripts/gates.sh"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cookie-session": "^2.1.0",
+    "express": "^5.1.0",
+    "pg": "^8.16.0"
+  }
+}
