@@ -1,6 +1,6 @@
 {
   "project": "catraca",
-  "updatedAt": "2026-10-03T17:13:47-03:00",
+  "updatedAt": "2026-10-03T17:14:12-03:00",
   "statusLegend": [
     "planned",
     "specified",
@@ -53,7 +53,7 @@
       "wave": 4,
       "status": "implemented",
       "branch": "feat/F05-checkin-painel",
-      "pr": null,
+      "pr": "https://github.com/PierryMedeiros/catraca/pull/5",
       "latestReport": null
     },
     {
