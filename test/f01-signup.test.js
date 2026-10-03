@@ -89,7 +89,7 @@ test('F01-AC08: campo role=organizer é ignorado e não há campo de papel no fo
     const orgEmail = uniqueEmail('org');
     const r = await createClient(app.baseUrl).post(p, { name: 'X', email: orgEmail, password: 'segredo1' });
     assert.ok([302, 404].includes(r.status), `${p} -> ${r.status}`);
-    if (r.status === 302) assert.equal(r.headers.get('location'), '/login');
+    if (r.status === 302) assert.equal(r.headers.get('location'), `/login?next=${encodeURIComponent(p)}`);
     const created = await query('SELECT count(*) AS n FROM users WHERE email = $1', [orgEmail]);
     assert.equal(created.rows[0].n, 0);
   }

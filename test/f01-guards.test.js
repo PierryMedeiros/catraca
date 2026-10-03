@@ -14,7 +14,7 @@ after(async () => {
   await endPool();
 });
 
-test('F01-AC09: visitante em /org/* vai ao login com next (GET) ou sem next (POST)', async () => {
+test('F01-AC09: visitante em /org/* vai ao login com next (GET e POST)', async () => {
   const c = createClient(app.baseUrl);
   let res = await c.get('/org/events');
   assert.equal(res.status, 302);
@@ -23,7 +23,7 @@ test('F01-AC09: visitante em /org/* vai ao login com next (GET) ou sem next (POS
   assert.equal(res.headers.get('location'), '/login?next=%2Forg%2Fevents%2Fevt_qualquer123');
   res = await c.post('/org/events', { name: 'X' });
   assert.equal(res.status, 302);
-  assert.equal(res.headers.get('location'), '/login');
+  assert.equal(res.headers.get('location'), '/login?next=%2Forg%2Fevents');
 });
 
 test('F01-AC09: participante em /org/* recebe 403 sem ecoar a URL', async () => {
