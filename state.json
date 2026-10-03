@@ -1,6 +1,6 @@
 {
   "project": "catraca",
-  "updatedAt": "2026-10-03T16:34:18-03:00",
+  "updatedAt": "2026-10-03T16:39:01-03:00",
   "statusLegend": [
     "planned",
     "specified",
@@ -24,10 +24,10 @@
       "id": "F02",
       "name": "Gestão de eventos",
       "wave": 2,
-      "status": "implemented",
+      "status": "done",
       "branch": "feat/F02-eventos",
       "pr": "https://github.com/PierryMedeiros/catraca/pull/2",
-      "latestReport": null
+      "latestReport": "docs/features/F02-eventos/reports/2026-10-03-1638-avaliacao.md"
     },
     {
       "id": "F03",
