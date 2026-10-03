@@ -29,7 +29,7 @@ Nenhum comando exige `npm install` no host: tudo roda em containers. O host só 
 1. **Fonte da verdade**: `docs/prd.md` (features, dependências, waves, critérios). Cada feature tem `docs/features/<ID>-<slug>/` com `spec.md`, `plan.md`, `contract.md` e `reports/`.
 2. **Estado**: `state.json` na raiz diz o status de cada feature e o relatório de avaliação mais recente. Atualize ao terminar uma etapa.
 3. **Quem implementa não avalia.** O avaliador é outro agente, em outra sessão, e só lê o contrato, o PRD e o código; nunca o histórico do implementador.
-4. **Relatórios são imutáveis**: cada avaliação gera um arquivo novo `reports/AAAA-MM-DD-HHMM-avaliacao.md`. Nunca edite um relatório commitado; reavaliação = arquivo novo.
+4. **Relatórios são imutáveis**: cada avaliação gera um arquivo novo `reports/AAAA-MM-DD-HHMM-avaliacao.md`. Nunca edite um relatório commitado — nem o próprio avaliador logo depois; revise antes de commitar. Reavaliação = arquivo novo. Instruções completas do avaliador: `docs/avaliador.md`.
 5. **Concorrência (R07, R03, R11)**: toda operação que lê e altera vagas de um evento (compra, edição de lotação, cancelamento) roda numa transação que começa com `SELECT ... FROM events WHERE id = $1 FOR UPDATE`. Não calcule vagas fora dessa trava para decidir uma compra.
 6. **Gateway**: transições vindas do gateway usam `UPDATE tickets SET status = ... WHERE id = $1 AND status = 'pending'` — resposta tardia nunca altera ingresso cancelado/estornado (R11).
 7. **Modo padrão = avaliador**: atrasos do gateway seguem a tabela do brief. Atrasos menores só por variável de ambiente nos testes (`GATEWAY_FAST_DELAY_MS`, `GATEWAY_SLOW_DELAY_MS`).
