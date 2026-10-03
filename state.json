@@ -24,8 +24,8 @@
       "id": "F02",
       "name": "Gestão de eventos",
       "wave": 2,
-      "status": "planned",
-      "branch": null,
+      "status": "in_progress",
+      "branch": "feat/F02-eventos",
       "pr": null,
       "latestReport": null
     },
