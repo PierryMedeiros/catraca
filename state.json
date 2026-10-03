@@ -1,6 +1,6 @@
 {
   "project": "catraca",
-  "updatedAt": "2026-10-03T18:57:31-03:00",
+  "updatedAt": "2026-10-03T19:06:33-03:00",
   "statusLegend": [
     "planned",
     "specified",
@@ -60,8 +60,8 @@
       "id": "F06",
       "name": "Cancelamento de evento",
       "wave": 5,
-      "status": "planned",
-      "branch": null,
+      "status": "implemented",
+      "branch": "feat/F06-cancelamento",
       "pr": null,
       "latestReport": null
     }
