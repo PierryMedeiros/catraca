@@ -1,6 +1,6 @@
 {
   "project": "catraca",
-  "updatedAt": "2026-10-03T18:57:09-03:00",
+  "updatedAt": "2026-10-03T18:57:31-03:00",
   "statusLegend": [
     "planned",
     "specified",
@@ -51,10 +51,10 @@
       "id": "F05",
       "name": "Check-in e painel",
       "wave": 4,
-      "status": "planned",
-      "branch": null,
-      "pr": null,
-      "latestReport": null
+      "status": "done",
+      "branch": "feat/F05-checkin-painel",
+      "pr": "https://github.com/PierryMedeiros/catraca/pull/5",
+      "latestReport": "docs/features/F05-checkin-painel/reports/2026-10-03-1716-avaliacao.md"
     },
     {
       "id": "F06",
