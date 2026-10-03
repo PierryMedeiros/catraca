@@ -55,6 +55,48 @@ Novos participantes se cadastram em `/signup`. Todos entram pela mesma tela, `/l
 `$KEY` = `catraca-parceiro-2026` (variável `PARTNER_API_KEY` do container, com esse valor padrão
 no `docker-compose.yml`). Enviada no cabeçalho `X-Api-Key`.
 
+## API de parceiros
+
+Contrato fixo do brief, em `$API` (mesmo endereço do produto). Toda rota exige o cabeçalho
+`X-Api-Key: $KEY`; a chave em query string, cookie de sessão ou outro cabeçalho não autentica.
+Todas as respostas são JSON (`application/json`), inclusive os erros (`{"error":"<código>"}`).
+
+```bash
+export API=http://localhost:3000 KEY=catraca-parceiro-2026   # com APP_PORT diferente, troque a porta
+
+# Eventos à venda (publicados e não cancelados), por data de início
+curl -s -H "X-Api-Key: $KEY" "$API/api/partner/events"
+# 200 [{"id":"evt_8f2k3m9q1z","name":"Jazz no Porão","startsAt":"2026-12-05T21:00:00-03:00","priceCents":10000,"availableSeats":2}]
+
+# Compra de um ingresso (responde sem esperar o gateway)
+curl -s -X POST "$API/api/partner/events/$E1/purchases" \
+  -H "X-Api-Key: $KEY" -H "Content-Type: application/json" \
+  -d '{"buyerEmail":"ana@example.com","cardNumber":"4000000000000001"}'
+# 202 {"ticketId":"tkt_51xq0a9b2c","code":"K7Q2M9XA","status":"pending"}
+
+# Consulta de um ingresso de qualquer canal (vitrine ou API)
+curl -s -H "X-Api-Key: $KEY" "$API/api/partner/tickets/$T2"
+# 200 {"ticketId":"tkt_51xq0a9b2c","code":"K7Q2M9XA","eventId":"evt_8f2k3m9q1z","status":"confirmed","checkedIn":false}
+```
+
+- `startsAt`: ISO 8601 no horário local do container com o offset do `TZ` (ex.: `-03:00`).
+- `availableSeats`: lotação − (pendentes + confirmados). Evento esgotado continua listado com `0`.
+- `priceCents`: preço vigente em centavos (inteiro). Mudança de preço vale só para compras seguintes.
+- `status` do ingresso: `pending`, `confirmed`, `declined`, `cancelled` ou `refunded`; `checkedIn` é booleano.
+- Compras pela API não ficam vinculadas a contas de participante (mesmo com e-mail igual), mas contam
+  para lotação, painel, check-in e cancelamento como as da vitrine.
+
+Erros, verificados nesta ordem na compra (401 → 422 → 404 → 409):
+
+| Status | Corpo | Quando |
+|---|---|---|
+| `401` | `{"error":"unauthorized"}` | qualquer rota sem `X-Api-Key` ou com chave errada (vem antes de tudo) |
+| `422` | `{"error":"invalid_request"}` | compra com corpo inválido: não-JSON ou não-objeto, `buyerEmail` ausente ou mal formado, `cardNumber` ausente ou sem exatamente 16 dígitos (ex.: `"123"`) |
+| `404` | `{"error":"event_not_available"}` | compra em evento inexistente, em rascunho ou cancelado (mesmo sem vagas) |
+| `409` | `{"error":"sold_out"}` | compra sem vaga disponível; nenhum ingresso é criado |
+| `404` | `{"error":"ticket_not_found"}` | consulta de ingresso inexistente |
+| `404` | `{"error":"not_found"}` | caminho ou método desconhecido sob `/api/partner` (com chave válida) |
+
 ## Fuso horário
 
 `./scripts/up.sh` repassa o fuso do host ao container como `TZ` (detectado com Node, `timedatectl`

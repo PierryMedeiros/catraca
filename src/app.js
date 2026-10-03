@@ -30,6 +30,7 @@ function createApp() {
   app.disable('x-powered-by');
 
   app.get('/health', health); // antes da sessão: não toca cookie
+  app.use('/api/partner', require('./features/partner').router); // F04: antes do parser de formulário e da sessão
 
   app.use(express.urlencoded({ extended: false }));
   app.use(sessionMiddleware);

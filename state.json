@@ -1,6 +1,6 @@
 {
   "project": "catraca",
-  "updatedAt": "2026-10-03T17:01:55-03:00",
+  "updatedAt": "2026-10-03T18:57:09-03:00",
   "statusLegend": [
     "planned",
     "specified",
@@ -42,10 +42,10 @@
       "id": "F04",
       "name": "API de parceiros",
       "wave": 4,
-      "status": "planned",
-      "branch": null,
-      "pr": null,
-      "latestReport": null
+      "status": "done",
+      "branch": "feat/F04-api-parceiros",
+      "pr": "https://github.com/PierryMedeiros/catraca/pull/4",
+      "latestReport": "docs/features/F04-api-parceiros/reports/2026-10-03-1717-avaliacao.md"
     },
     {
       "id": "F05",
