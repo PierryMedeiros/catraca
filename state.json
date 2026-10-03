@@ -1,6 +1,6 @@
 {
   "project": "catraca",
-  "updatedAt": "2026-10-03T18:05:00-03:00",
+  "updatedAt": "2026-10-03T17:12:00-03:00",
   "statusLegend": [
     "planned",
     "specified",
@@ -44,7 +44,7 @@
       "wave": 4,
       "status": "implemented",
       "branch": "feat/F04-api-parceiros",
-      "pr": null,
+      "pr": "https://github.com/PierryMedeiros/catraca/pull/4",
       "latestReport": null
     },
     {
