@@ -20,23 +20,26 @@ async function lockEvent(client, eventId) {
 
 /**
  * Vagas do evento (R05): { capacity, occupied, available } ou null se o evento
- * não existe. occupied = ingressos pending + confirmed. Enquanto a tabela
- * tickets não existir (antes de F03), occupied = 0. O nome `tickets` não é
- * qualificado: uma tabela TEMP de mesmo nome (testes) tem precedência.
+ * não existe. occupied = ingressos pending + confirmed (declined, cancelled e
+ * refunded não ocupam vaga); available = capacity - occupied, sem clamp.
+ * Implementação de F03 (tabela tickets real, 003_tickets.sql). Para decidir uma
+ * compra ou uma edição de lotação, chame depois de lockEvent na mesma
+ * transação. O nome `tickets` não é qualificado: uma tabela TEMP de mesmo nome
+ * (teste de F02-AC08) tem precedência.
  */
 async function getSeatStats(client, eventId) {
-  const ev = firstOrNull(await client.query('SELECT capacity FROM events WHERE id = $1', [String(eventId)]));
-  if (!ev) return null;
-  let occupied = 0;
-  const { rows } = await client.query("SELECT to_regclass('tickets') IS NOT NULL AS has_tickets");
-  if (rows[0].has_tickets) {
-    const r = await client.query(
-      "SELECT count(*) AS n FROM tickets WHERE event_id = $1 AND status IN ('pending', 'confirmed')",
-      [String(eventId)]
-    );
-    occupied = Number(r.rows[0].n);
-  }
-  const capacity = Number(ev.capacity);
+  const { rows } = await client.query(
+    `SELECT e.capacity,
+            count(*) FILTER (WHERE t.status IN ('pending', 'confirmed'))::int AS occupied
+       FROM events e
+       LEFT JOIN tickets t ON t.event_id = e.id
+      WHERE e.id = $1
+      GROUP BY e.capacity`,
+    [String(eventId)]
+  );
+  if (!rows[0]) return null;
+  const capacity = Number(rows[0].capacity);
+  const occupied = Number(rows[0].occupied);
   return { capacity, occupied, available: capacity - occupied };
 }
 
