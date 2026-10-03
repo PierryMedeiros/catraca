@@ -4,6 +4,7 @@ const { pool } = require('./db');
 const { runMigrations } = require('./migrate');
 const { runSeed } = require('./seed');
 const { createApp } = require('./app');
+const { startGatewayWorker } = require('./features/gateway/worker');
 
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -15,12 +16,14 @@ async function main() {
   const server = createApp().listen(PORT, () => {
     console.log(`listening on ${PORT} (TZ=${process.env.TZ || 'padrão do sistema'})`);
   });
-  // F03: startGatewayWorker()
+  // F03: worker do gateway (registerPurchases já o iniciou; a chamada é idempotente)
+  const gatewayWorker = startGatewayWorker();
 
   let stopping = false;
   const shutdown = (signal) => {
     if (stopping) return;
     stopping = true;
+    gatewayWorker.stop();
     console.log(`${signal} recebido, encerrando`);
     const force = setTimeout(() => process.exit(0), 3000);
     force.unref();

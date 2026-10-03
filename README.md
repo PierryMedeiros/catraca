@@ -65,8 +65,12 @@ com o offset desse fuso.
 ## Configuração
 
 Não há `.env` versionado; o Compose resolve os padrões: `APP_PORT` (3000), `TZ`, `SESSION_SECRET`,
-`PARTNER_API_KEY` (`catraca-parceiro-2026`), `GATEWAY_FAST_DELAY_MS` (2000),
-`GATEWAY_SLOW_DELAY_MS` (65000), `GATEWAY_POLL_MS` (500).
+`PARTNER_API_KEY` (`catraca-parceiro-2026`).
+
+Gateway simulado: o app lê `GATEWAY_FAST_DELAY_MS` (padrão 2000), `GATEWAY_SLOW_DELAY_MS` (padrão 65000)
+e `GATEWAY_POLL_MS` (padrão 500) do ambiente, mas o `docker-compose.yml` **não** as define: a subida
+normal roda sempre no modo padrão (o do avaliador, tabela do brief). Só os gates
+(`docker-compose.gates.yml`) usam atrasos menores (200 / 1500 / 50 ms).
 
 ## Mapa dos artefatos
 

@@ -32,9 +32,8 @@ services:
       TZ: ${TZ:-America/Sao_Paulo}
       SESSION_SECRET: ${SESSION_SECRET:-catraca-sessao-local}
       PARTNER_API_KEY: ${PARTNER_API_KEY:-catraca-parceiro-2026}
-      GATEWAY_FAST_DELAY_MS: ${GATEWAY_FAST_DELAY_MS:-2000}
-      GATEWAY_SLOW_DELAY_MS: ${GATEWAY_SLOW_DELAY_MS:-65000}
-      GATEWAY_POLL_MS: ${GATEWAY_POLL_MS:-500}
+      # Sem GATEWAY_*: o app usa os atrasos padrão do brief (2000/65000 ms,
+      # polling 500 ms). Atrasos menores só nos gates (docker-compose.gates.yml).
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health >/dev/null || exit 1"]
       interval: 5s

@@ -146,6 +146,29 @@ Retorno: `Promise<{ ok: true, ticket } | { ok: false, error: 'invalid_request' |
 
 Erros inesperados (banco fora etc.) são lançados (rejeição da Promise), não convertidos em códigos.
 
+#### Uso por F04 (API de parceiros) — interface final implementada
+
+```js
+const { purchaseTicket, getTicketById } = require('../purchases/service'); // src/features/purchases/service.js (CommonJS)
+
+const r = await purchaseTicket({
+  eventId: req.params.eventId,                 // string; fora de ^evt_[a-z0-9]{10}$ -> event_not_available
+  buyer: { email: body.buyerEmail },           // partner: sem userId; o e-mail é gravado com trim + minúsculas
+  cardNumber: body.cardNumber,                 // string de exatamente 16 dígitos (o serviço NÃO remove espaços)
+  channel: 'partner',
+});
+// r.ok === true  -> r.ticket = linha de tickets em snake_case: { id, code, status: 'pending', event_id, checked_in, ... }
+// r.ok === false -> r.error é exatamente um destes valores (iguais a messages.API_ERRORS):
+```
+
+| `r.error` | Quando | HTTP da API (brief) |
+|---|---|---|
+| `invalid_request` | `channel` inválido; `cardNumber` não-string ou fora de `^\d{16}$`; `buyer` ausente; `buyer.email` não-string ou fora de `^[^\s@]+@[^\s@]+\.[^\s@]+$` após trim; `channel='web'` sem `buyer.userId`. Verificado **antes** de olhar o evento. | `422 {"error":"invalid_request"}` |
+| `event_not_available` | id fora do formato, evento inexistente, `draft` ou `cancelled` (mesmo sem vaga). Lido sob a trava. | `404 {"error":"event_not_available"}` |
+| `sold_out` | `getSeatStats(...).available <= 0` dentro da trava. Nenhum ingresso é criado. | `409 {"error":"sold_out"}` |
+
+Corpo JSON não-objeto, campos ausentes ou de tipo errado: F04 pode repassar o que recebeu (`buyer: { email: body && body.buyerEmail }`, `cardNumber: body && body.cardNumber`) — o serviço devolve `invalid_request`. A resposta `202` da API é `{ ticketId: r.ticket.id, code: r.ticket.code, status: r.ticket.status }`. `getTicketById(pool, id)` devolve a linha (snake_case: `id`, `code`, `event_id`, `status`, `checked_in`) ou `null` (inclusive para id malformado) → `404 ticket_not_found`.
+
 ### `insertTicket(client, { eventId, userId, buyerEmail, priceCents, channel, cardLast4, gatewayOutcome, delayMs }, generateCode = generateTicketCode)`
 
 Interface provida (nome escolhido aqui; usada por `purchaseTicket` e pelos testes de colisão). Executa
@@ -276,3 +299,17 @@ F03 não reescreve nem duplica nenhum texto do brief: importa de `messages.js`.
 - Nomes escolhidos por F03 (o PRD não fixa) e providos às próximas features: `registerPurchases(app)`, `insertTicket(...)`, arquivos `routes.js`/`views.js`/`index.js` em `src/features/purchases/`, campo de formulário `cardNumber`, constraint `tickets_code_key`, marcadores HTML (`li.event[data-event-id]`, `p.seats`, `.sold-out`, `tr.ticket[data-ticket-id]`, `td.ticket-status[data-status]`, `td.ticket-code`), códigos HTTP da vitrine (303/404/409/422), `startGatewayWorker()` retorna `{stop()}`.
 - O PRD não diz o que `lockEvent` retorna; F03 assume a linha do evento (§6).
 - F03-AC08 e o passo 15 do brief usam a API, que só existe em F04 (wave 4). O contrato de F03 prova R07 por 30 POSTs simultâneos na vitrine e por 30 chamadas simultâneas de `purchaseTicket`.
+
+## 11. Desvios da implementação (registrados no PR da F03)
+
+- **`docker-compose.yml` sem `GATEWAY_*`.** A spec de F01 definia as três variáveis no serviço `app` com os valores padrão; o pré-requisito do contrato de F03 exige `docker compose exec -T app printenv | grep -c '^GATEWAY_'` = `0` e o plano (etapa 1) diz que o app de `up.sh` não recebe essas variáveis. Removidas do Compose padrão; o app usa os padrões do brief (2000 / 65000 / 500 ms) quando elas não existem. Os gates continuam definindo `200` / `1500` / `50` em `docker-compose.gates.yml` (valores de F01, em vez dos `300` / `1500` / `100` sugeridos no plano — mesmo efeito).
+- **`getSeatStats`** usa `count(*) FILTER (WHERE t.status IN ('pending','confirmed'))` em vez de `count(t.id) FILTER (...)`: o teste de F02-AC08 cria uma tabela `TEMP tickets (event_id, status)` sem coluna `id`, que sombreia a real. Resultado idêntico com a tabela real.
+- **`insertTicket`** usa `ON CONFLICT DO NOTHING` (sem alvo): cobre colisão de `code` e, por tabela, a (improvável) colisão de `id`; nos dois casos tenta de novo com id e código novos, até 10 vezes.
+- **`purchaseTicket`** devolve `event_not_available` sem abrir transação quando o `eventId` não é string no formato `^evt_[a-z0-9]{10}$` (resultado igual ao de evento inexistente). Para ids no formato, a primeira instrução da transação continua sendo `lockEvent`.
+- **`lockEvent`** de F02 devolve a linha inteira do evento (`SELECT * ... FOR UPDATE`), como §6 assumia.
+- **Worker**: além de `registerPurchases(app)`, `src/server.js` chama `startGatewayWorker()` (idempotente, devolve o mesmo controle) para poder pará-lo no `SIGTERM`. Os timers usam `unref()` e o worker para sozinho quando o `pool` é encerrado (processos de teste terminam limpos). Exporta também `resolveDueTickets(client)` (um ciclo; usado nos testes).
+- **`<title>` da página do evento é genérico (`Evento`)** e o 404 de evento usa o título `Página não encontrada` com `<h1>Evento não encontrado</h1>`: assim o nome do evento e o texto `Evento não encontrado` aparecem uma única vez no HTML, como contam os itens C03/C04 do contrato (`grep -c`).
+- **422 de cartão inválido para evento que não está à venda**: sem página de evento para reexibir, responde 422 com a página de erro genérica e a mesma mensagem do cartão.
+- `service.js` exporta também `listTicketsForUser(client, userId)` (consulta de "Meus ingressos"), `isValidCardNumber` e `isValidEmail`.
+- Nenhum desvio em relação ao brief.
+
