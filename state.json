@@ -1,6 +1,6 @@
 {
   "project": "catraca",
-  "updatedAt": "2026-10-03T16:39:01-03:00",
+  "updatedAt": "2026-10-03T17:10:00-03:00",
   "statusLegend": [
     "planned",
     "specified",
@@ -33,8 +33,8 @@
       "id": "F03",
       "name": "Vitrine, compra e gateway",
       "wave": 3,
-      "status": "planned",
-      "branch": null,
+      "status": "implemented",
+      "branch": "feat/F03-compra",
       "pr": null,
       "latestReport": null
     },
