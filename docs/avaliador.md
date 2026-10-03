@@ -27,7 +27,11 @@ Diretório: {WORKTREE} (branch `{BRANCH}`). Não leia nada fora dele.
    evidências com as saídas relevantes (trechos), e o veredito final
    (APROVADO só se todos os itens forem aprovados). Para itens reprovados, descreva o
    comportamento esperado vs. observado e como reproduzir.
-6. Nunca altere relatórios existentes. Faça commit só do seu relatório
+6. Revise o relatório ANTES do commit: depois de commitado ele é imutável — inclusive para você.
+   Se perceber um erro depois do commit, não corrija o arquivo: avise o orquestrador, que decide
+   por uma avaliação nova (arquivo novo). (Lição da F05: um segundo commit de "correção de nota"
+   no mesmo relatório quebrou a regra de imutabilidade.)
+   Nunca altere relatórios existentes. Faça commit só do seu relatório
    (`git add <relatório>`; mensagem `docs({ID}): relatório de avaliação AAAA-MM-DD-HHMM`,
    sem trailers nem menção a IA) e `git push`.
 7. Responda em até 10 linhas: veredito final, itens reprovados (com o motivo) e caminho do relatório.
