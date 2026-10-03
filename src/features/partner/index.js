@@ -3,13 +3,14 @@
 // F04: router da API de parceiros, montado em /api/partner (spec F04 §3).
 // Ordem: no-store -> requireApiKey -> rotas -> 404 JSON -> handler de erro JSON.
 // Montado em src/app.js antes de qualquer parser global de corpo e da sessão:
-// o corpo da compra só é lido aqui, como JSON (formulário, JSON malformado -> 422).
+// o corpo da compra só é lido aqui, como JSON, qualquer que seja o Content-Type
+// (formulário ou JSON malformado -> 422).
 
 const express = require('express');
 const { API_ERRORS } = require('../../messages');
 const { PARTNER_EXTRA_ERRORS } = require('./errors');
 const { requireApiKey } = require('./auth');
-const { listEvents } = require('./routes');
+const { listEvents, createPurchase, getTicket } = require('./routes');
 
 const router = express.Router();
 
@@ -19,8 +20,13 @@ router.use((req, res, next) => {
 });
 router.use(requireApiKey);
 
-router.get('/events', listEvents);
+const jsonBody = express.json({ type: () => true, limit: '10kb' });
 
+router.get('/events', listEvents);
+router.post('/events/:eventId/purchases', jsonBody, createPurchase);
+router.get('/tickets/:ticketId', getTicket);
+
+// Caminho ou método desconhecido (com chave válida).
 router.use((req, res) => {
   res.status(404).json({ error: PARTNER_EXTRA_ERRORS.notFound });
 });
