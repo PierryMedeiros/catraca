@@ -1,6 +1,6 @@
 {
   "project": "catraca",
-  "updatedAt": "2026-10-03T17:01:55-03:00",
+  "updatedAt": "2026-10-03T17:13:47-03:00",
   "statusLegend": [
     "planned",
     "specified",
@@ -51,8 +51,8 @@
       "id": "F05",
       "name": "Check-in e painel",
       "wave": 4,
-      "status": "planned",
-      "branch": null,
+      "status": "implemented",
+      "branch": "feat/F05-checkin-painel",
       "pr": null,
       "latestReport": null
     },
