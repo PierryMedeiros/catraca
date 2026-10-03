@@ -9,6 +9,7 @@ const express = require('express');
 const { API_ERRORS } = require('../../messages');
 const { PARTNER_EXTRA_ERRORS } = require('./errors');
 const { requireApiKey } = require('./auth');
+const { listEvents } = require('./routes');
 
 const router = express.Router();
 
@@ -17,6 +18,8 @@ router.use((req, res, next) => {
   next();
 });
 router.use(requireApiKey);
+
+router.get('/events', listEvents);
 
 router.use((req, res) => {
   res.status(404).json({ error: PARTNER_EXTRA_ERRORS.notFound });
