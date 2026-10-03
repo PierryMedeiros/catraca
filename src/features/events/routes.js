@@ -11,6 +11,8 @@ const { sendPage } = require('../../views/layout');
 const repo = require('./repo');
 const service = require('./service');
 const views = require('./views');
+const { renderCancelError } = require('../cancellation/views');
+const { CANCEL_TEXTS } = require('../cancellation/texts');
 
 const router = express.Router();
 
@@ -54,9 +56,12 @@ for (const action of ['edit', 'publish']) {
 /** Responde a falhas de edição/publicação; a página é montada fora da transação. */
 async function sendFailure(req, res, result) {
   if (result.reason === 'not_found') return views.sendEventNotFound(req, res);
+  // F06: evento cancelado é irreversível -> 409 sem alterar nada (spec F06 §3.2).
+  if (result.reason === 'cancelled') {
+    return renderCancelError(res, { user: req.user, eventId: req.params.id, message: CANCEL_TEXTS.cancelledReadOnly });
+  }
   const event = await repo.getEventForOrganizer(pool, req.params.id, req.user.id);
   if (!event) return views.sendEventNotFound(req, res);
-  if (result.reason === 'cancelled') return views.sendManagePage(req, res, { event, status: 409 });
   return views.sendManagePage(req, res, {
     event,
     status: 422,
