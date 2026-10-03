@@ -1,6 +1,6 @@
 {
   "project": "catraca",
-  "updatedAt": "2026-10-03T16:23:47-03:00",
+  "updatedAt": "2026-10-03T16:34:18-03:00",
   "statusLegend": [
     "planned",
     "specified",
@@ -24,7 +24,7 @@
       "id": "F02",
       "name": "Gestão de eventos",
       "wave": 2,
-      "status": "in_progress",
+      "status": "implemented",
       "branch": "feat/F02-eventos",
       "pr": null,
       "latestReport": null
