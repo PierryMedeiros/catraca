@@ -1,6 +1,6 @@
 {
   "project": "catraca",
-  "updatedAt": "2026-10-03T19:06:33-03:00",
+  "updatedAt": "2026-10-03T19:16:44-03:00",
   "statusLegend": [
     "planned",
     "specified",
@@ -60,10 +60,10 @@
       "id": "F06",
       "name": "Cancelamento de evento",
       "wave": 5,
-      "status": "implemented",
+      "status": "done",
       "branch": "feat/F06-cancelamento",
       "pr": "https://github.com/PierryMedeiros/catraca/pull/6",
-      "latestReport": null
+      "latestReport": "docs/features/F06-cancelamento/reports/2026-10-03-1915-avaliacao.md"
     }
   ]
 }
